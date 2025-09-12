@@ -104,6 +104,3 @@ grammar-spell-checker/
 
 Built with ❤️ by [Priyanka](https://www.linkedin.com/in/your-profile)
 
-
-
-Let me know if you'd like to add badges, a logo, or link it to your GitHub repo. You’re ready to post this on LinkedIn and GitHub—it’s clean, impressive, and shows off your full-stack skills!
