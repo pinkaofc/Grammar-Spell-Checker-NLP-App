@@ -102,5 +102,5 @@ grammar-spell-checker/
 
 ### 📣 Connect with Me
 
-Built with ❤️ by [Priyanka](https://www.linkedin.com/in/your-profile)
+Built by [Priyanka](https://www.linkedin.com/in/your-profile)
 
