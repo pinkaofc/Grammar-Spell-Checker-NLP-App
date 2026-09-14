@@ -33,4 +33,8 @@ def grammar():
     return render_template('index.html')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # 0.0.0.0 so the container is reachable from outside it; 7860 is the port
+    # Hugging Face Spaces routes to. debug=True must not ship - it exposes an
+    # interactive debugger that executes arbitrary code.
+    import os
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 7860)), debug=False)
