@@ -1,4 +1,6 @@
-# Hugging Face Spaces (Docker SDK).
+# Local / self-hosted image for the Flask version (flask_app.py).
+# Hugging Face offers Docker only on a paid plan, so the public demo
+# runs the Gradio app in app.py instead. This still builds and runs.
 #
 # Three things this image does deliberately:
 #   * installs the CPU-only torch wheel - the default pulls the CUDA build,
@@ -41,4 +43,4 @@ EXPOSE 7860
 # Two workers would load the model twice and exhaust the free tier's memory.
 # One worker, and a long timeout because beam search on CPU is not quick.
 CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--workers", "1", \
-     "--threads", "4", "--timeout", "180", "app:app"]
+     "--threads", "4", "--timeout", "180", "flask_app:app"]

@@ -1,6 +1,11 @@
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from textblob import TextBlob
+import string
+
 import torch
+from textblob import Word
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+# Below this, a suggestion is more likely to be noise than a genuine fix.
+MIN_CONFIDENCE = 0.9
 
 class SpellCheckerModule:
     def __init__(self):
@@ -9,10 +14,32 @@ class SpellCheckerModule:
         self.model = AutoModelForSeq2SeqLM.from_pretrained("prithivida/grammar_error_correcter_v1")
 
     def correct_spell(self, text):
-        # Use TextBlob to correct spelling word-by-word
-        words = text.split()
-        corrected_words = [str(TextBlob(word).correct()) for word in words]
-        return " ".join(corrected_words)
+        """Correct spelling word by word, without mangling words already right.
+
+        TextBlob's dictionary is lowercase and ranked by frequency, so asking it
+        about a capitalised word gives the wrong answer: "She" scores 0.04 while
+        "The" scores 0.83, and a naive per-word pass rewrites the start of most
+        sentences. Look the word up in lowercase, restore the original casing,
+        and only substitute when the suggestion is both different and confident.
+        """
+        corrected = []
+        for token in text.split():
+            core = token.strip(string.punctuation)
+            if not core or not core.isalpha():
+                corrected.append(token)
+                continue
+
+            suggestion, confidence = Word(core.lower()).spellcheck()[0]
+            if suggestion == core.lower() or confidence < MIN_CONFIDENCE:
+                corrected.append(token)          # already a word, or too unsure
+                continue
+
+            if core.isupper():
+                suggestion = suggestion.upper()
+            elif core[0].isupper():
+                suggestion = suggestion.capitalize()
+            corrected.append(token.replace(core, suggestion))
+        return " ".join(corrected)
 
     def correct_grammar(self, text):
         # Ensure input is a string
